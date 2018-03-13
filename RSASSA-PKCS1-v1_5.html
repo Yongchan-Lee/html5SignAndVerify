@@ -1,0 +1,59 @@
+<script>
+window.RSASSA = {
+name: "RSASSA-PKCS1-v1_5",
+modulusLength: 2048,
+publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+hash: {name: "SHA-256"},
+}
+
+var pubKey;
+var priKey;
+
+window.crypto.subtle.generateKey(RSASSA, true, ["sign", "verify"])
+.then(function(key) {
+    pubKey=key.publicKey;
+    priKey=key.privateKey;
+
+    console.log(pubKey);
+    console.log(priKey);
+});
+
+var enc = new TextEncoder("utf-8");
+var denc = new TextDecoder("utf-8");
+
+window.crypto.subtle.exportKey("spki", pubKey)
+.then(function(pubBuff) {
+    var Uint8Pub = new Uint8Array(pubBuff);
+    console.log(pubBuff);
+    console.log("Uint8Pub: " + Uint8Pub);
+    console.log("utf-8Pub: " + denc.decode(Uint8Pub));
+});
+
+window.crypto.subtle.exportKey("pkcs8", priKey)
+.then(function(priBuff) {
+    var Uint8Pri = new Uint8Array(priBuff);
+    console.log(priBuff);
+    console.log("Uint8Pri: " + Uint8Pri);
+    console.log("utf-8Pri: " + denc.decode(Uint8Pri));
+});
+
+var plainText = "TEST";
+var plainData = enc.encode(plainText);
+var signedData;
+
+window.crypto.subtle.sign(RSASSA, priKey, plainData)
+.then(function (signed) {
+        signedData = signed;
+        var uint8Signed = new Uint8Array(signed);
+        console.log(signed);
+        console.log("Uint8Signed: " + uint8Signed);
+        console.log("utf-8Signed: " + denc.decode(uint8Signed));
+    }
+);
+
+window.crypto.subtle.verify(RSASSA, pubKey, signedData, plainData).then(
+    function (value) {
+        console.log(value);                                 //value is true
+    }
+);
+</script>
