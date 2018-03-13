@@ -1,0 +1,85 @@
+<script>
+window.RSASSA = {
+name: "RSASSA-PKCS1-v1_5",
+modulusLength: 2048,
+publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+hash: {name: "SHA-256"},
+}
+
+
+//////////////////////////////// Gen&Store Key //////////////////////////////////
+
+var pubKey;
+var priKey;
+
+window.crypto.subtle.generateKey(RSASSA, true, ["sign", "verify"])
+.then(function(key) {
+    pubKey=key.publicKey;
+    priKey=key.privateKey;
+
+    console.log(pubKey);
+    console.log(priKey);
+});
+
+var enc = new TextEncoder("utf-8");
+var denc = new TextDecoder("utf-8");
+
+var uint8pubtest;
+var uint8pritest;
+
+window.crypto.subtle.exportKey("spki", pubKey)
+.then(function(pubBuff) {
+    var uint8Pub = new Uint8Array(pubBuff);
+    uint8pubtest = uint8Pub;
+    console.log(pubBuff);
+    console.log("Uint8Pub: ", uint8Pub);
+    console.log("utf-8Pub: " + denc.decode(uint8Pub));
+    localStorage.pubKey = JSON.stringify(uint8Pub);
+});
+
+window.crypto.subtle.exportKey("pkcs8", priKey)
+.then(function(priBuff) {
+    var uint8Pri = new Uint8Array(priBuff);
+    uint8pritest = uint8Pri;
+    console.log(priBuff);
+    console.log("Uint8Pri: " + uint8Pri);
+    console.log("utf-8Pri: " + denc.decode(uint8Pri));
+    localStorage.priKey = JSON.stringify(uint8Pri);
+});
+
+///////////////////////////////// Import Key //////////////////////////////////
+
+var pubKey;
+var priKey;
+
+var pubArr = [];
+pubJSON = JSON.parse(localStorage.pubKey);
+
+for (var n in pubJSON) {
+    pubArr.push(pubJSON[n]);
+}
+
+var pubKeyLocal = new Uint8Array(pubArr);
+
+var priArr = [];
+priJSON = JSON.parse(localStorage.priKey);
+
+for (var n in priJSON) {
+    priArr.push(priJSON[n]);
+}
+
+var priKeyLocal = new Uint8Array(priArr);
+
+window.crypto.subtle.importKey("spki", pubKeyLocal, RSASSA, true, ["verify"])
+.then(function(key) {
+    pubKey = key;
+    console.log(key);
+});
+
+window.crypto.subtle.importKey("pkcs8", priKeyLocal, RSASSA, true, ["sign"])
+.then(function(key) {
+    priKey = key;
+    console.log(key)
+});
+
+</script>
