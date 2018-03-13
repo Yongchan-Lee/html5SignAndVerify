@@ -6,7 +6,6 @@ publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
 hash: {name: "SHA-256"},
 }
 
-
 //////////////////////////////// Gen&Store Key //////////////////////////////////
 
 var pubKey;
@@ -33,7 +32,7 @@ window.crypto.subtle.exportKey("spki", pubKey)
     uint8pubtest = uint8Pub;
     console.log(pubBuff);
     console.log("Uint8Pub: ", uint8Pub);
-    console.log("utf-8Pub: " + denc.decode(uint8Pub));
+    console.log("utf-8Pub: ", denc.decode(uint8Pub));
     localStorage.pubKey = JSON.stringify(uint8Pub);
 });
 
@@ -42,8 +41,8 @@ window.crypto.subtle.exportKey("pkcs8", priKey)
     var uint8Pri = new Uint8Array(priBuff);
     uint8pritest = uint8Pri;
     console.log(priBuff);
-    console.log("Uint8Pri: " + uint8Pri);
-    console.log("utf-8Pri: " + denc.decode(uint8Pri));
+    console.log("Uint8Pri: ", uint8Pri);
+    console.log("utf-8Pri: ", denc.decode(uint8Pri));
     localStorage.priKey = JSON.stringify(uint8Pri);
 });
 

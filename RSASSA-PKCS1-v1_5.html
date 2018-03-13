@@ -25,16 +25,16 @@ window.crypto.subtle.exportKey("spki", pubKey)
 .then(function(pubBuff) {
     var Uint8Pub = new Uint8Array(pubBuff);
     console.log(pubBuff);
-    console.log("Uint8Pub: " + Uint8Pub);
-    console.log("utf-8Pub: " + denc.decode(Uint8Pub));
+    console.log("Uint8Pub: ", Uint8Pub);
+    console.log("utf-8Pub: ", denc.decode(Uint8Pub));
 });
 
 window.crypto.subtle.exportKey("pkcs8", priKey)
 .then(function(priBuff) {
     var Uint8Pri = new Uint8Array(priBuff);
     console.log(priBuff);
-    console.log("Uint8Pri: " + Uint8Pri);
-    console.log("utf-8Pri: " + denc.decode(Uint8Pri));
+    console.log("Uint8Pri: ", Uint8Pri);
+    console.log("utf-8Pri: ", denc.decode(Uint8Pri));
 });
 
 var plainText = "TEST";
@@ -46,8 +46,8 @@ window.crypto.subtle.sign(RSASSA, priKey, plainData)
         signedData = signed;
         var uint8Signed = new Uint8Array(signed);
         console.log(signed);
-        console.log("Uint8Signed: " + uint8Signed);
-        console.log("utf-8Signed: " + denc.decode(uint8Signed));
+        console.log("Uint8Signed: ", uint8Signed);
+        console.log("utf-8Signed: ", denc.decode(uint8Signed));
     }
 );
 
