@@ -1,0 +1,56 @@
+<script>
+window.ECDSA = {
+name: "ECDSA",
+namedCurve: "P-256",
+hash: {name: "SHA-256"},
+};
+
+var pubKey;
+var priKey;
+
+window.crypto.subtle.importKey("spki", new Uint8Array([
+                            48,89,48,19,6,7,42,134,72,206,61,2,1,6,8,42,134,72,206,61,3,1,7,3,66,0,4,3,151,
+                            208,156,23,65,74,0,97,78,51,43,212,11,105,206,248,121,72,166,16,225,164,17,39,
+                            213,147,8,110,84,226,110,241,129,125,241,188,179,50,88,199,95,116,249,57,18,216,
+                            76,54,220,192,111,191,122,173,223,219,114,109,76,78,165,57,237
+                        ]), ECDSA, true, ["verify"]).then(
+                            function(key) {
+                                pubKey = key;
+                            }
+                        );
+
+window.crypto.subtle.importKey("pkcs8", new Uint8Array([
+                            48,129,135,2,1,0,48,19,6,7,42,134,72,206,61,2,1,6,8,42,134,72,206,61,3,1,7,4,109,48,
+                            107,2,1,1,4,32,224,59,194,250,28,105,191,201,178,100,179,94,49,143,188,158,174,121,50,
+                            23,95,3,138,27,51,89,70,27,120,69,255,42,161,68,3,66,0,4,3,151,208,156,23,65,74,0,97,
+                            78,51,43,212,11,105,206,248,121,72,166,16,225,164,17,39,213,147,8,110,84,226,110,241,
+                            129,125,241,188,179,50,88,199,95,116,249,57,18,216,76,54,220,192,111,191,122,173,223,
+                            219,114,109,76,78,165,57,237
+                        ]), ECDSA, true, ["sign"]).then(
+                            function(key) {
+                                priKey = key;
+                            }
+                        );
+
+var enc = new TextEncoder("utf-8");
+var denc = new TextDecoder("utf-8");
+
+var plainData = enc.encode("test");
+
+var signedData;
+
+window.crypto.subtle.sign(ECDSA, priKey, plainData).then(
+    function (signedText) {
+        signedData = signedText;
+        var uint8View = new Uint8Array(signedText); 
+        console.log(uint8View);
+    }
+);
+
+window.crypto.subtle.verify(ECDSA, pubKey, signedData, plainData).then(
+    function (value) {
+        console.log(value);                                 //value is true
+    }
+);
+
+</script>
