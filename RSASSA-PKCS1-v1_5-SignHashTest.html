@@ -1,0 +1,129 @@
+<script>
+
+////////////////// Make Key ///////////////////
+
+window.RSASSA = {
+    name: "RSASSA-PKCS1-v1_5",
+    modulusLength: 2048,
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    hash: {name: "SHA-256"},
+}
+
+var pubKey;
+var priKey;
+
+window.crypto.subtle.generateKey(RSASSA, true, ["sign", "verify"])
+.then(function(key) {
+    pubKey=key.publicKey;
+    priKey=key.privateKey;
+
+    console.log(pubKey);
+    console.log(priKey);
+});
+
+///////////////// Sign with SHA-256 ///////////////////
+
+var plainText = 'TEST'
+
+var enc = new TextEncoder('utf-8');
+
+var uint8plain = enc.encode(plainText);
+
+var uint8SHA256Signed;
+
+window.crypto.subtle.sign(RSASSA, priKey, uint8plain)
+.then(function (signed) {        
+        uint8SHA256Signed = new Uint8Array(signed);
+        console.log(signed);
+        console.log("Uint8Signed: ", uint8SHA256Signed);
+        console.log("utf-8Signed: ", denc.decode(uint8SHA256Signed));
+    }
+);
+
+///////////////// Sign without HASH //////////////////
+
+window.RSASSA = {
+    name: "RSASSA-PKCS1-v1_5",
+    modulusLength: 2048,
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    hash: null,
+}
+
+var uint8PlainSigned;
+
+window.crypto.subtle.sign(RSASSA, priKey, uint8plain)
+.then(function (signed) {        
+        uint8PlainSigned = new Uint8Array(signed);
+        console.log(signed);
+        console.log("Uint8Signed: ", uint8PlainSigned);
+        console.log("utf-8Signed: ", denc.decode(uint8PlainSigned));
+    }
+);
+
+/////////////////// Compare ///////////////////
+
+uint8PlainSigned == uint8SHA256Signed;          //false
+
+uint8PlainSigned === uint8SHA256Signed;         //false
+
+var x;
+
+for (x in uint8PlainSigned) {
+    console.log(uint8PlainSigned[x] == uint8SHA256Signed[x]);
+}                                               //true
+
+////////////////// Additional Caomper Test with SHA-1 ////////////////////
+
+window.RSASSA = {
+    name: "RSASSA-PKCS1-v1_5",
+    modulusLength: 2048,
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    hash: {name: "SHA-1"},
+}
+
+var uint8SHA1Signed;
+
+window.crypto.subtle.sign(RSASSA, priKey, uint8plain)
+.then(function (signed) {        
+        uint8SHA1Signed = new Uint8Array(signed);
+        console.log(signed);
+        console.log("Uint8Signed: ", uint8SHA1Signed);
+        console.log("utf-8Signed: ", denc.decode(uint8SHA1Signed));
+    }
+);
+
+uint8SHA1Signed == uint8SHA256Signed;          //false
+
+uint8SHA1Signed === uint8SHA256Signed;         //false
+
+var x;
+
+for (x in uint8SHA1Signed) {
+    console.log(uint8SHA1Signed[x] == uint8SHA256Signed[x]);
+}                                               //true
+
+///////////////// hash name test /////////////////
+
+window.RSASSA = {
+    name: "RSASSA-PKCS1-v1_5",
+    modulusLength: 2048,
+    publicExponent: new Uint8Array([0x01, 0x00, 0x01]),
+    hash: {name: "KTNET"},
+}
+
+var uint8KtnetSigned;
+
+window.crypto.subtle.sign(RSASSA, priKey, uint8plain)
+.then(function (signed) {        
+        uint8KtnetSigned = new Uint8Array(signed);
+        console.log(signed);
+        console.log("Uint8Signed: ", uint8KtnetSigned);
+        console.log("utf-8Signed: ", denc.decode(uint8KtnetSigned));
+    }
+);
+
+window.crypto.subtle.verify(RSASSA, pubKey, uint8KtnetSigned, uint8plain);          //verify test: true
+
+window.crypto.subtle.generateKey(RSASSA, false, ["sign"])                           //generate test: rejected - DOMException: RsaHashedKeyGenParams: hash: Algorithm: Unrecognized name
+
+</script>
